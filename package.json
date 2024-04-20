@@ -20,6 +20,10 @@
       {
         "command": "pandoc-grid-table.previousCell",
         "title": "Previous Cell"
+      },
+      {
+        "command": "pandoc-grid-table.formatTable",
+        "title": "Format Table"
       }
     ],
     "keybindings": [

@@ -108,7 +108,7 @@ export function get_table_range(
 	// return the range
 	return new vscode.Range(
 		new vscode.Position(start_line, 0),
-		new vscode.Position(end_line, 0),
+		new vscode.Position(end_line, doc.lineAt(end_line).text.length),
 	);
 }
 
@@ -134,11 +134,17 @@ function get_previous_row(
 	table_range: vscode.Range,
 	current_line: number,
 ): number | undefined {
+	let found_last_row = false;
 	let previous_row_line = current_line - 1;
 	while (previous_row_line >= table_range.start.line) {
 		const line_text = doc.lineAt(previous_row_line).text;
-		if (line_text.charAt(0) === "+") {
+		if (found_last_row && line_text.charAt(0) === "+") {
 			return previous_row_line + 1;
+		}
+		if (line_text.charAt(0) === "+") {
+			// Found the horizontal line to the top of the cell
+			// Search next horizontal line
+			found_last_row = true;
 		}
 		previous_row_line--;
 	}
@@ -186,21 +192,7 @@ function find_previous_cell_in_current_line(
 	current_col: number,
 ): [number, number] | undefined {
 	// check char for char until we find a "|"
-	let start_col = current_col;
-	while (start_col >= 0) {
-		if (line_text.charAt(start_col) === "|") {
-			console.log(`Found | at column ${start_col}`);
-			break;
-		}
-		start_col--;
-	}
-	// exit function if we reach the end of the line
-	if (start_col < 0) {
-		console.log(`Reached end of line at column ${start_col}`);
-		return undefined;
-	}
-	// check if we find another "|" after the first "|"
-	let end_col = start_col - 1;
+	let end_col = current_col;
 	while (end_col >= 0) {
 		if (line_text.charAt(end_col) === "|") {
 			console.log(`Found | at column ${end_col}`);
@@ -208,6 +200,26 @@ function find_previous_cell_in_current_line(
 		}
 		end_col--;
 	}
+	// exit function if we reach the end of the line
+	if (end_col === 0) {
+		console.log(`Reached end of line at column ${end_col}`);
+		return undefined;
+	}
+	// check if we find another "|" after the first "|"
+	let start_col = end_col - 1;
+	while (start_col >= 0) {
+		if (line_text.charAt(start_col) === "|") {
+			console.log(`Found | at column ${start_col}`);
+			break;
+		}
+		start_col--;
+		if (start_col < 0) {
+			console.log(`Reached end of line at column ${start_col}`);
+			return undefined;
+		}
+	}
+	console.log(`Found | at columns ${start_col} and ${end_col}`);
+	return [start_col, end_col];
 }
 
 // find next cell , returns the range for the next cell
@@ -279,7 +291,8 @@ export function get_previous_cell_range(
 			// exit the function and return undefined
 			return undefined;
 		}
-		first_char = 0;
+		// set first char to end of current line
+		first_char = doc.lineAt(current_line).text.length;
 	}
 	const [start_col, end_col] = start_end;
 

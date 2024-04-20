@@ -22,6 +22,12 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand("pandoc-grid-table.previousCell", () =>
 			commands.previous_cell(),
 		),
+		// vscode.commands.registerCommand("pandoc-grid-table.formatTable", () =>
+		// 	commands.format_table(),
+		// ),
+		vscode.workspace.onDidChangeTextDocument((event) => {
+			commands.format_table(event);
+		}),
 	);
 }
 
