@@ -43,7 +43,7 @@ function is_row_separator(line_text: string): boolean {
 	if (second_char !== "-" && second_char !== "=") {
 		return false;
 	}
-	for (let i = 2; i < line_text.length - 2; i++) {
+	for (let i = 2; i < line_text.length - 1; i++) {
 		// compare the char to the second char
 		if (line_text.charAt(i) !== second_char) {
 			// if not, the line is not a row separator
@@ -141,56 +141,56 @@ export class TableCell {
 	}
 }
 
-class TableRow {
-	// Every row contains a list of cells
-	_cells: Array<TableCell>;
+// class TableRow {
+// 	// Every row contains a list of cells
+// 	_cells: Array<TableCell>;
 
-	constructor(raw_row: string) {
-		// Deconstruct the row into its cells
-		// go through the row and split it into cells
-		// The split happens at either a table edge or a table corner
-		this._cells = [];
-		let current_cell_str = raw_row.charAt(0);
-		for (let i = 1; i < raw_row.length; i++) {
-			// get the current char
-			const char = raw_row.charAt(i);
-			// add the char to the current cell
-			current_cell_str += char;
-			// check if the char is a table edge or a table corner
-			if (char === "|" || char === "+") {
-				// create a new cell with the current cell string
-				this._cells.push(new TableCell(current_cell_str));
-				// reset the current cell string
-				current_cell_str = char;
-			}
-		}
-	}
+// 	constructor(raw_row: string) {
+// 		// Deconstruct the row into its cells
+// 		// go through the row and split it into cells
+// 		// The split happens at either a table edge or a table corner
+// 		this._cells = [];
+// 		let current_cell_str = raw_row.charAt(0);
+// 		for (let i = 1; i < raw_row.length; i++) {
+// 			// get the current char
+// 			const char = raw_row.charAt(i);
+// 			// add the char to the current cell
+// 			current_cell_str += char;
+// 			// check if the char is a table edge or a table corner
+// 			if (char === "|" || char === "+") {
+// 				// create a new cell with the current cell string
+// 				this._cells.push(new TableCell(current_cell_str));
+// 				// reset the current cell string
+// 				current_cell_str = char;
+// 			}
+// 		}
+// 	}
 
-	get number_of_cells(): number {
-		return this._cells.length;
-	}
+// 	get number_of_cells(): number {
+// 		return this._cells.length;
+// 	}
 
-	get_length_of_cell(index: number): number {
-		return this._cells[index].cell.length;
-	}
+// 	get_length_of_cell(index: number): number {
+// 		return this._cells[index].cell.length;
+// 	}
 
-	get_cell(index: number): string {
-		return this._cells[index].cell;
-	}
-}
+// 	get_cell(index: number): string {
+// 		return this._cells[index].cell;
+// 	}
+// }
 
 // class Table {
 // 	// The Table class stores a whole table with all the rows and cells
 // }
 
-export function format_table(
-	editor: vscode.TextEditor,
-	doc: vscode.TextDocument,
-	cur_selection: vscode.Selection,
-	table_range: vscode.Range,
-	text_change: string,
-) {
-	throw new Error("Method not implemented.");
-	// const table = new Table(doc, table_range);
-	// table.format_table(text_change);
-}
+// export function format_table(
+// 	editor: vscode.TextEditor,
+// 	doc: vscode.TextDocument,
+// 	cur_selection: vscode.Selection,
+// 	table_range: vscode.Range,
+// 	text_change: string,
+// ) {
+// 	throw new Error("Method not implemented.");
+// 	// const table = new Table(doc, table_range);
+// 	// table.format_table(text_change);
+// }

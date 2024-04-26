@@ -89,5 +89,5 @@ export function format_table(event: vscode.TextDocumentChangeEvent): void {
 	const text_change = event.contentChanges[0].text;
 
 	// format the table
-	formatter.format_table(editor, doc, cur_selection, table_range, text_change);
+	// formatter.format_table(editor, doc, cur_selection, table_range, text_change);
 }

@@ -81,19 +81,32 @@ suite("Test Suite", () => {
 		const cell = new TableCell(input_cell);
 		assert.strictEqual(cell.cell, " test ");
 	});
-	test("Invalid length", () => {
-		const input_cell: string = "| test |";
-		const output_length = 3;
-		const cell = new TableCell(input_cell);
-		// Check if the formatter throws an error
-		assert.throws(() => cell.get_formatted_cell(output_length, true));
-	});
-	test("Invalid row separator", () => {
-		const input_cell: string = "+ test +";
+	test("Testing = separator", () => {
+		const input_cell: string = "+==+";
 		const output_length = 6;
 		const cell = new TableCell(input_cell);
 		const output = cell.get_formatted_cell(output_length, true);
-		assert.strictEqual(output, "+ test +");
+		assert.strictEqual(output, "+======+");
+	});
+	test("Testing too short cell", () => {
+		const input_cell: string = "| test |";
+		const output_length = 3;
+		const cell = new TableCell(input_cell);
+		assert.throws(() => cell.get_formatted_cell(output_length, true));
+	});
+	test("Missing front separator", () => {
+		const input_cell: string = "+ --+";
+		const output_length = 4;
+		const cell = new TableCell(input_cell);
+		const output = cell.get_formatted_cell(output_length, true);
+		assert.strictEqual(output, "+ -- +");
+	});
+	test("Missing back separator", () => {
+		const input_cell: string = "+-- +";
+		const output_length = 4;
+		const cell = new TableCell(input_cell);
+		const output = cell.get_formatted_cell(output_length, true);
+		assert.strictEqual(output, "+ -- +");
 	});
 	test("Missing one separator", () => {
 		const input_cell: string = "+- -+";
@@ -102,11 +115,18 @@ suite("Test Suite", () => {
 		const output = cell.get_formatted_cell(output_length, true);
 		assert.strictEqual(output, "+ - - +");
 	});
-	test("Testing = separator", () => {
-		const input_cell: string = "+==+";
+	test("Second char is not a separator", () => {
+		const input_cell: string = "+- -+";
+		const output_length = 5;
+		const cell = new TableCell(input_cell);
+		const output = cell.get_formatted_cell(output_length, true);
+		assert.strictEqual(output, "+ - - +");
+	});
+	test("Third char is not a separator", () => {
+		const input_cell: string = "+-- -+";
 		const output_length = 6;
 		const cell = new TableCell(input_cell);
 		const output = cell.get_formatted_cell(output_length, true);
-		assert.strictEqual(output, "+======+");
+		assert.strictEqual(output, "+ -- - +");
 	});
 });
