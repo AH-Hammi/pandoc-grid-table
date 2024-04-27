@@ -1,5 +1,64 @@
 # pandoc-grid-table README
 
+
+Grid Table
+
++-------------+---------+----------+
+|             | max     | 56.7 °C  |
+
+
++-----------------------+----------+
+| Properties            | Earth    |
++=============+=========+==========+
+|             | min     | -89.2 °C |
+| Temperature +---------+----------+
+| 1961-1990   | mean    | 14 °C    |
+|             +---------+----------+
+|             | max     | 56.7 °C  |
++-------------+---------+----------+
+
+ 13            6
++-------------+------+ Table
+| verbunden | test |
+ 6      6      6
++------+------+------+ Table
+ 6      13
+| test | verbunden   | Table
+ 6      6      6
++------+------+------+ Table
+ 13            6
+| verbunden   | test | Table
++-------------+------+
+
+ 6      6      6      6
++------+------+------+------+ Row
+| test | test | test | test | row Table
++------+------+------+------+ row
+
+ 13             28
+| verbunden   | verbunden und verlängert   | Row Table
+
+ 6      6      6      6
++------+------+------+------+ Row
+| test | test | test | test | row Table
++------+------+------+------+ row
+
+Berechne die Summe von Spalte 1 und 2 der vorherigen Tabelle und vergleiche diese mit der Summe der aktuellen
+
+Vergleiche Breite Zelle 1 der Tabelle 1 mit Zelle 1 Tabelle 2
+Wenn die Breite == so gehe weiter zur 
+
+Ist die aktuelle Zelle gleich der nachfolgenden Tabelle, wenn nicht so vergleiche:
+    wenn nachfolgende Zelle > als aktuelle ist, so addiere die nachfolgende Zelle +1 zu der aktuelle und vergleiche die Summe.
+      mache dies bis die Summe == ist
+
++--------------+
+| Header 1     |
++======+=======+
+| test | Row 2 |
++------+-------+
+
+
 This is the README for your extension "pandoc-grid-table". After writing up a brief description, we recommend including the following sections.
 
 ## Features
