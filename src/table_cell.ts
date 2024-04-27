@@ -1,13 +1,3 @@
-/**
- * This file contains the function to format the table
- *
- * @author Alexander Hammans
- * @version 0.0.1
- * @license GNU-GPL-3.0
- */
-
-import type * as vscode from "vscode";
-
 enum TableSeparator {
 	TABLE_EDGE = "|",
 	TABLE_CORNER = "+",
@@ -64,22 +54,44 @@ export class TableCell {
 	is_row_separator: boolean;
 	front_separator: TableSeparator;
 	back_separator: TableSeparator;
+	initial_cell_length: number;
 
 	constructor(raw_cell: string) {
 		this._cell = "";
 		this.front_separator = TableSeparator.TABLE_EDGE;
 		this.back_separator = TableSeparator.TABLE_EDGE;
 		this.is_row_separator = false;
+		this.initial_cell_length = 0;
 		this.cell = raw_cell;
 	}
 
 	set cell(raw_cell: string) {
+		// check if first and last char are Table Edge or Table Corner
+		const first_char = raw_cell.charAt(0);
+		const last_char = raw_cell.charAt(raw_cell.length - 1);
+
+		// check if the first and last char are a valid enum value
+		if (!Object.values(TableSeparator).includes(first_char as TableSeparator)) {
+			throw new Error(
+				"The first character of the cell is not a valid separator.",
+			);
+		}
+		if (!Object.values(TableSeparator).includes(last_char as TableSeparator)) {
+			throw new Error(
+				"The last character of the cell is not a valid separator.",
+			);
+		}
+
 		// The first and last character determine what separator is used
 		this.front_separator = raw_cell.charAt(0) as TableSeparator;
 		this.back_separator = raw_cell.charAt(
 			raw_cell.length - 1,
 		) as TableSeparator;
 		// The rest of the cell is the inner text
+
+		// save the initial length
+		this.initial_cell_length = raw_cell.length - 2;
+
 		// Check if the cell is a row separator
 		if (
 			this.front_separator === TableSeparator.TABLE_CORNER &&
@@ -140,57 +152,3 @@ export class TableCell {
 		return formatted;
 	}
 }
-
-// class TableRow {
-// 	// Every row contains a list of cells
-// 	_cells: Array<TableCell>;
-
-// 	constructor(raw_row: string) {
-// 		// Deconstruct the row into its cells
-// 		// go through the row and split it into cells
-// 		// The split happens at either a table edge or a table corner
-// 		this._cells = [];
-// 		let current_cell_str = raw_row.charAt(0);
-// 		for (let i = 1; i < raw_row.length; i++) {
-// 			// get the current char
-// 			const char = raw_row.charAt(i);
-// 			// add the char to the current cell
-// 			current_cell_str += char;
-// 			// check if the char is a table edge or a table corner
-// 			if (char === "|" || char === "+") {
-// 				// create a new cell with the current cell string
-// 				this._cells.push(new TableCell(current_cell_str));
-// 				// reset the current cell string
-// 				current_cell_str = char;
-// 			}
-// 		}
-// 	}
-
-// 	get number_of_cells(): number {
-// 		return this._cells.length;
-// 	}
-
-// 	get_length_of_cell(index: number): number {
-// 		return this._cells[index].cell.length;
-// 	}
-
-// 	get_cell(index: number): string {
-// 		return this._cells[index].cell;
-// 	}
-// }
-
-// class Table {
-// 	// The Table class stores a whole table with all the rows and cells
-// }
-
-// export function format_table(
-// 	editor: vscode.TextEditor,
-// 	doc: vscode.TextDocument,
-// 	cur_selection: vscode.Selection,
-// 	table_range: vscode.Range,
-// 	text_change: string,
-// ) {
-// 	throw new Error("Method not implemented.");
-// 	// const table = new Table(doc, table_range);
-// 	// table.format_table(text_change);
-// }

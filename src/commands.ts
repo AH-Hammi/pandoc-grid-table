@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import * as text from "./text_utility";
-import * as formatter from "./formatter";
+import * as formatter from "./table";
 
 // A function to navigate to the next cell
 export function next_cell(): void {
