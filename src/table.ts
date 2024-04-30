@@ -10,43 +10,150 @@ import type * as vscode from "vscode";
 
 import { TableCell } from "./table_cell";
 import { TableRow } from "./table_row";
+import { TableColumn } from "./table_column";
 
-export class Table {
-	// The Table class stores a whole table with all the rows and cells
-	_rows: Array<TableRow>;
+class TableColumnsConnector {
+	// This class servers as a way to connect one column with multiple others
+	// This class should give the ability to return the needed column widths
+	spanning_column: TableColumn;
+	spanned_columns: Array<TableColumn>;
 
-	constructor() {
-		this._rows = [];
+	constructor(spanning_column: TableColumn) {
+		this.spanning_column = spanning_column;
+		this.spanned_columns = [];
 	}
 
-	add_row_raw(raw_row: string) {
-		this._rows.push(new TableRow(raw_row));
+	// add a spanned column
+	add_spanned_column(column: TableColumn) {
+		this.spanned_columns.push(column);
+	}
+
+	get spanned_columns_widths(): Array<number> {
+		return this.spanned_columns.map((column) => column.get_minimum_width());
+	}
+
+	get spanned_columns_combined_width(): number {
+		// calculate the combined width of the spanned columns
+		let spanned_columns_width = -1;
+		for (const column of this.spanned_columns) {
+			spanned_columns_width += column.get_minimum_width();
+			spanned_columns_width++;
+		}
+		return spanned_columns_width;
+	}
+
+	// calculate the needed column widths
+	calculate_widths(): {
+		spanning_column_width: number;
+		spanned_columns_widths: Array<number>;
+	} {
+		const combined_width = this.spanned_columns_combined_width;
+		const spanning_width = this.spanning_column.get_minimum_width();
+		// compare the width of the spanning column with the combined width of the spanned columns
+		if (combined_width === spanning_width) {
+			return {
+				spanning_column_width: this.spanning_column.get_minimum_width(),
+				spanned_columns_widths: this.spanned_columns_widths,
+			};
+		}
+
+		// case the combined is larger than the spanning column
+		if (combined_width > spanning_width) {
+			return {
+				spanning_column_width: combined_width,
+				spanned_columns_widths: this.spanned_columns_widths,
+			};
+		}
+
+		// case the combined is smaller than the spanning column
+		if (combined_width < spanning_width) {
+			// calculate the needed column widths
+			const needed_column_widths: Array<number> = this.spanned_columns_widths;
+			// calculate the needed added width
+			const difference = spanning_width - combined_width;
+			// add the needed width to the last column
+			needed_column_widths[needed_column_widths.length - 1] += difference;
+			return {
+				spanning_column_width: this.spanning_column.get_minimum_width(),
+				spanned_columns_widths: needed_column_widths,
+			};
+		}
+
+		throw new Error("Error in Programm, This should never be reached");
+	}
+}
+
+export class ComplexTable {
+	// The Complex Table consists of multiple tables which don't have the same number of columns
+	_tables: Array<Table>;
+
+	constructor() {
+		this._tables = [];
+	}
+
+	get last_table(): Table {
+		return this._tables[this._tables.length - 1];
+	}
+
+	add_row_raw(row: string) {
+		this.add_row(new TableRow(row));
 	}
 
 	add_row(row: TableRow) {
+		// check if the _tables is empty
+		if (this._tables.length === 0) {
+			this._tables.push(new Table(row));
+			return;
+		}
+
+		// try adding the row to the last table
+		try {
+			this.last_table.add_row(row);
+		} catch (error) {
+			// if the row cannot be added to the last table, create a new table
+			this._tables.push(new Table(row));
+			return;
+		}
+	}
+
+	get_formatted_table(): Array<string> {
+		const formatted_tables: Array<string> = [];
+		return formatted_tables;
+	}
+}
+
+export class Table {
+	// This class only stores rows and columns that all have the same number of cells
+	// The Table class stores a whole table with all the rows and cells
+	_rows: Array<TableRow>;
+	_columns: Array<TableColumn>;
+
+	constructor(initial_row: TableRow) {
+		this._rows = [initial_row];
+		// create the number of columns of the table
+		this._columns = [];
+		for (let i = 0; i < initial_row.number_of_cells; i++) {
+			this._columns.push(new TableColumn());
+			// add the individual cells to the columns
+			this._columns[i].add_cell(initial_row.get_cell(i));
+		}
+	}
+
+	get number_of_columns(): number {
+		return this._columns.length;
+	}
+
+	add_row(row: TableRow) {
+		// check if the row has the correct number of cells
+		if (row.number_of_cells !== this.number_of_columns) {
+			throw new Error("The row does not have the same number of cells as the table.");
+		}
+		// add the row to the table
 		this._rows.push(row);
-	}
-
-	has_concatenated_columns(): boolean {
-		for (const row of this._rows) {
-			if (row.number_of_cells !== this._rows[0].number_of_cells) {
-				return true;
-			}
+		// add the individual cells to the columns
+		for (let i = 0; i < row.number_of_cells; i++) {
+			this._columns[i].add_cell(row.get_cell(i));
 		}
-		return false;
-	}
-
-	get_min_column_width(index: number): number {
-		// check if the table is empty
-		if (this._rows.length === 0) {
-			return 0;
-		}
-		// get the column width
-		let column_width = 0;
-		for (const row of this._rows) {
-			column_width = Math.max(column_width, row.get_cell(index).minimum_cell_length);
-		}
-		return column_width;
 	}
 
 	get_min_column_widths(): Array<number> {
@@ -56,8 +163,8 @@ export class Table {
 		}
 		const column_widths = [];
 		// search min width of each column
-		for (let i = 0; i < this._rows[0].number_of_cells; i++) {
-			column_widths.push(this.get_min_column_width(i));
+		for (const column of this._columns) {
+			column_widths.push(column.get_minimum_width());
 		}
 		return column_widths;
 	}
@@ -91,72 +198,11 @@ export class Table {
 		// check if we have any concatenated rows
 		const formatted_rows: Array<string> = [];
 
-		if (this.has_concatenated_columns()) {
-			// throw new Error("The table has concatenated columns.");
-			// split the table up at the point where there are concatenated columns
-			const list_of_tables: Array<Table> = [];
-			list_of_tables.push(new Table());
-			list_of_tables[0].add_row(this._rows[0]);
-			// get the width of the first row of the table and save it
-			for (let current_index = 1; current_index < this._rows.length; current_index++) {
-				if (
-					this._rows[current_index].number_of_cells !==
-					list_of_tables[list_of_tables.length - 1]._rows[0].number_of_cells
-				) {
-					list_of_tables.push(new Table());
-				}
-				list_of_tables[list_of_tables.length - 1].add_row(this._rows[current_index]);
-			}
-
-			// get separator positions for each tables first row
-			const list_of_separator_positions: Array<Array<number>> = [];
-			for (const table of list_of_tables) {
-				list_of_separator_positions.push(table._rows[0].get_list_of_separator_positions());
-			}
-
-			// check matching separator positions from front
-			const matching_separator_positions_front = [];
-			// search the number of the first separator positions in the second table
-			// for (let i = 0; i < list_of_separator_positions.length - 1; i++) {
-			// 	// go through the list of separator positions
-			// 	for (let j = 0; j < list_of_separator_positions[i].length; j++) {
-			// 		// check if we find a matching separator position
-			// 		for (let k = 0; k < list_of_separator_positions[i + 1].length; k++) {
-			// 			if (
-			// 				list_of_separator_positions[i][j] ===
-			// 				list_of_separator_positions[i + 1][k]
-			// 			) {
-			// 				matching_separator_positions_front.push(j);
-			// 				break;
-			// 			}
-			// 		}
-			// 	}
-			// }
-			for (let i = 0; i < list_of_separator_positions[0].length - 1; i++) {
-				for (let j = 0; j < list_of_separator_positions[1].length; j++) {
-					if (list_of_separator_positions[0][i] === list_of_separator_positions[1][j]) {
-						matching_separator_positions_front.push(i);
-						break;
-					}
-				}
-			}
-			console.log(matching_separator_positions_front);
-
-			// calculate the inverted separator positions
-			// subtract every position from the last in each list
-			for (let i = 0; i < list_of_separator_positions.length; i++) {
-				for (let j = 0; j < list_of_separator_positions[i].length; j++) {
-					list_of_separator_positions[i][j] =
-						list_of_separator_positions[i][list_of_separator_positions[i].length - 1] -
-						list_of_separator_positions[i][j];
-				}
-			}
-		} else {
-			// get the formatted rows
-			for (const row of this._rows) {
-				formatted_rows.push(row.get_formatted_row(this.get_min_column_widths()));
-			}
+		// get the formatted rows
+		for (const row of this._rows) {
+			formatted_rows.push(row.get_formatted_row(this.get_min_column_widths()));
 		}
+
 		return formatted_rows;
 	}
 }
