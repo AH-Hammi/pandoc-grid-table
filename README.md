@@ -1,11 +1,10 @@
 # pandoc-grid-table README
 
-
 Grid Table
 
+```plain
 +-------------+---------+----------+
 |             | max     | 56.7 °C  |
-
 
 +-----------------------+----------+
 | Properties            | Earth    |
@@ -42,38 +41,36 @@ Grid Table
 +------+------+------+------+ Row
 | test | test | test | test | row Table
 +------+------+------+------+ row
+```
 
 Berechne die Summe von Spalte 1 und 2 der vorherigen Tabelle und vergleiche diese mit der Summe der aktuellen
 
-Vergleiche Breite Zelle 1 der Tabelle 1 mit Zelle 1 Tabelle 2
-Wenn die Breite == so gehe weiter zur 
+Vergleiche Breite Zelle 1 der Tabelle 1 mit Zelle 1 Tabelle 2  
+Wenn die Breite == so gehe weiter zur
 
-Ist die aktuelle Zelle gleich der nachfolgenden Tabelle, wenn nicht so vergleiche:
-    wenn nachfolgende Zelle > als aktuelle ist, so addiere die nachfolgende Zelle +1 zu der aktuelle und vergleiche die Summe.
-      mache dies bis die Summe == ist
+Ist die aktuelle Zelle gleich der nachfolgenden Tabelle, wenn nicht so vergleiche:  
+    wenn nachfolgende Zelle > als aktuelle ist, so addiere die nachfolgende Zelle +1 zu der aktuelle und vergleiche die Summe.  
+      mache dies bis die Summe == ist  
 
+```plain
 +--------------+
 | Header 1     |
 +======+=======+
 | test | Row 2 |
 +------+-------+
-
+```
 
 This is the README for your extension "pandoc-grid-table". After writing up a brief description, we recommend including the following sections.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+This Extension aims to help in handling [pandoc grid tables](https://pandoc.org/MANUAL.html#extension-grid_tables).
 
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+This extension enables you to quickly jump from one cell to the next as well as auto formatting the table.
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+For this extension to make any sense you need to have pandoc installed.
 
 ## Extension Settings
 
@@ -92,39 +89,29 @@ Calling out known issues can help limit users opening duplicate issues against y
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
+No release notes yet.
 
 ### 1.0.0
 
-Initial release of ...
+upcoming
 
-### 1.0.1
+## Upcoming Features
 
-Fixed issue #.
+* [x] Jump to next cell
+* [ ] Jump to previous cell
+* [ ] Format table
+* [ ] Add a snippet to add a new table
+* [ ] Add a new row after tabing from the last cell
+* [ ] [Create multiline cell](#create-multiline-cell)
+* [ ] Add alignment to cells depending on the header row
+* [ ] Insert Column to the left
+* [ ] Insert Column to the right
+* [ ] Insert Row above
+* [ ] Insert Row below
+* [ ] Delete Column
+* [ ] Delete Row
 
-### 1.1.0
+### Create multiline cell
 
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+On pressing "enter" key in a cell,  
+create a new line for that cell and start at the beginning of the cell.
