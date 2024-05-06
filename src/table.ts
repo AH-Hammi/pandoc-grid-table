@@ -8,7 +8,6 @@
 
 import type * as vscode from "vscode";
 
-import { TableCell } from "./table_cell";
 import { TableRow } from "./table_row";
 import { TableColumn } from "./table_column";
 
@@ -25,14 +24,24 @@ class TableColumnsConnector {
 
 	// add a spanned column
 	add_spanned_column(column: TableColumn) {
+		// test if the column is undefined
+		// if (column === undefined) {
+		// 	throw new Error("Column is undefined");
+		// }
 		this.spanned_columns.push(column);
+		// remove any undefined items in the list
+		// this.spanned_columns = this.spanned_columns.filter((column) => column !== undefined);
+	}
+
+	get last_spanned_column(): TableColumn {
+		return this.spanned_columns[this.spanned_columns.length - 1];
 	}
 
 	get spanned_columns_widths(): Array<number> {
 		return this.spanned_columns.map((column) => column.get_minimum_width());
 	}
 
-	get spanned_columns_combined_width(): number {
+	get_spanned_columns_combined_width(): number {
 		// calculate the combined width of the spanned columns
 		let spanned_columns_width = -1;
 		for (const column of this.spanned_columns) {
@@ -43,26 +52,20 @@ class TableColumnsConnector {
 	}
 
 	// calculate the needed column widths
-	calculate_widths(): {
-		spanning_column_width: number;
-		spanned_columns_widths: Array<number>;
-	} {
-		const combined_width = this.spanned_columns_combined_width;
+	// The calculated will be saved in the columns
+	calculate_widths() {
+		const combined_width = this.get_spanned_columns_combined_width();
 		const spanning_width = this.spanning_column.get_minimum_width();
 		// compare the width of the spanning column with the combined width of the spanned columns
 		if (combined_width === spanning_width) {
-			return {
-				spanning_column_width: this.spanning_column.get_minimum_width(),
-				spanned_columns_widths: this.spanned_columns_widths,
-			};
+			// when getting the minimum width the correct value is already set in the columns
+			return;
 		}
 
 		// case the combined is larger than the spanning column
 		if (combined_width > spanning_width) {
-			return {
-				spanning_column_width: combined_width,
-				spanned_columns_widths: this.spanned_columns_widths,
-			};
+			this.spanning_column.set_minimum_width(combined_width);
+			return;
 		}
 
 		// case the combined is smaller than the spanning column
@@ -71,24 +74,112 @@ class TableColumnsConnector {
 			const needed_column_widths: Array<number> = this.spanned_columns_widths;
 			// calculate the needed added width
 			const difference = spanning_width - combined_width;
-			// add the needed width to the last column
-			needed_column_widths[needed_column_widths.length - 1] += difference;
-			return {
-				spanning_column_width: this.spanning_column.get_minimum_width(),
-				spanned_columns_widths: needed_column_widths,
-			};
+			// set the minimum width of the last spanned column to the needed width
+			this.last_spanned_column.set_minimum_width(needed_column_widths[needed_column_widths.length - 1] + difference);
+			return;
 		}
+	}
+}
 
-		throw new Error("Error in Programm, This should never be reached");
+class ColumnConnectors {
+	list_of_connectors: Array<TableColumnsConnector>;
+	constructor(last_table: Table, new_table: Table) {
+		this.list_of_connectors = [];
+
+		// check if the two lines have the same width
+		if (last_table.last_row.initial_width !== new_table.first_row.initial_width) {
+			throw new Error("The two lines must have the same width");
+			// search the changed lines in the available lines
+			// get the index of the changed line
+			// go over the available lines
+		}
+		// calculate the column connectors
+		// get initial cell widths of the last line and get the current cell widths
+		const last_line_widths = last_table.last_row.initial_cell_lengths;
+		const new_line_widths = new_table.first_row.initial_cell_lengths;
+
+		let remaining_cells_old = last_line_widths.length;
+		let remaining_cells_new = new_line_widths.length;
+
+		// go through the
+		while (remaining_cells_new > 0 && remaining_cells_old > 0) {
+			const last_line_last_cell = last_line_widths[remaining_cells_old - 1];
+			const new_line_last_cell = new_line_widths[remaining_cells_new - 1];
+			// case both lengths are the same
+			if (last_line_last_cell === new_line_last_cell) {
+				// create a new simple connector
+				const new_connector = new TableColumnsConnector(new_table.columns[remaining_cells_new - 1]);
+				new_connector.add_spanned_column(last_table.columns[remaining_cells_old - 1]);
+				this.list_of_connectors.push(new_connector);
+				remaining_cells_old--;
+				remaining_cells_new--;
+				continue;
+			}
+			// case the last line last cell is smaller than the current line last cell
+			let combined = last_line_last_cell;
+			let counter = 2;
+			while (combined < new_line_last_cell) {
+				combined += last_line_widths[remaining_cells_old - counter] + 1;
+				counter++;
+			}
+			// check if combined is the same as the new line last cell
+			if (combined === new_line_last_cell) {
+				const new_connector = new TableColumnsConnector(new_table.columns[remaining_cells_new - 1]);
+				counter--;
+				while (counter > 0) {
+					new_connector.add_spanned_column(last_table.columns[remaining_cells_old - counter]);
+					counter--;
+				}
+				this.list_of_connectors.push(new_connector);
+				remaining_cells_old -= counter;
+				remaining_cells_new--;
+				continue;
+			}
+			if (counter > 2 && combined > new_line_last_cell) {
+				throw new Error("Case not handled yet");
+			}
+
+			combined = new_line_last_cell;
+			counter = 2;
+			while (combined < last_line_last_cell) {
+				combined += new_line_widths[remaining_cells_new - counter] + 1;
+				counter++;
+			}
+
+			if (combined === last_line_last_cell) {
+				const new_connector = new TableColumnsConnector(last_table.columns[remaining_cells_old - 1]);
+				counter--;
+				while (counter > 0) {
+					new_connector.add_spanned_column(new_table.columns[remaining_cells_new - counter]);
+					counter--;
+				}
+				this.list_of_connectors.push(new_connector);
+				remaining_cells_new -= counter;
+				remaining_cells_old--;
+				continue;
+			}
+
+			if (combined > last_line_last_cell) {
+				throw new Error("Case not handled yet");
+			}
+		}
+	}
+
+	calculate_widths() {
+		for (const connector of this.list_of_connectors) {
+			connector.calculate_widths();
+		}
 	}
 }
 
 export class ComplexTable {
 	// The Complex Table consists of multiple tables which don't have the same number of columns
-	_tables: Array<Table>;
+	private _tables: Array<Table>;
+	private _column_connectors: Array<ColumnConnectors>;
 
 	constructor() {
 		this._tables = [];
+		this._column_connectors = [];
 	}
 
 	get last_table(): Table {
@@ -110,14 +201,32 @@ export class ComplexTable {
 		try {
 			this.last_table.add_row(row);
 		} catch (error) {
+			const last_table = this.last_table;
+			const new_table = new Table(row);
 			// if the row cannot be added to the last table, create a new table
-			this._tables.push(new Table(row));
+			this._tables.push(new_table);
+			// create a new list of column connectors
+			this._column_connectors.push(new ColumnConnectors(last_table, new_table));
 			return;
 		}
 	}
 
 	get_formatted_table(): Array<string> {
 		const formatted_tables: Array<string> = [];
+		// Iterate over the column connectors and calculate the minimum widths
+		for (const connector of this._column_connectors) {
+			connector.calculate_widths();
+		}
+		// iterate over the column connectors in reverse
+		for (let i = this._column_connectors.length - 1; i >= 0; i--) {
+			// calculate the widths again
+			this._column_connectors[i].calculate_widths();
+		}
+
+		for (const table of this._tables) {
+			// append the formatted table to the formatted tables
+			formatted_tables.push(...table.get_formatted_table());
+		}
 		return formatted_tables;
 	}
 }
@@ -125,8 +234,8 @@ export class ComplexTable {
 export class Table {
 	// This class only stores rows and columns that all have the same number of cells
 	// The Table class stores a whole table with all the rows and cells
-	_rows: Array<TableRow>;
-	_columns: Array<TableColumn>;
+	private _rows: Array<TableRow>;
+	private _columns: Array<TableColumn>;
 
 	constructor(initial_row: TableRow) {
 		this._rows = [initial_row];
@@ -143,6 +252,10 @@ export class Table {
 		return this._columns.length;
 	}
 
+	get columns(): Array<TableColumn> {
+		return this._columns;
+	}
+
 	add_row(row: TableRow) {
 		// check if the row has the correct number of cells
 		if (row.number_of_cells !== this.number_of_columns) {
@@ -157,10 +270,6 @@ export class Table {
 	}
 
 	get_min_column_widths(): Array<number> {
-		// check if the table is empty
-		if (this._rows.length === 0) {
-			return [];
-		}
 		const column_widths = [];
 		// search min width of each column
 		for (const column of this._columns) {
@@ -169,32 +278,18 @@ export class Table {
 		return column_widths;
 	}
 
-	/// This function return the width of the table excluding the table edge left and right
-	get_min_width(): number {
-		// check if the table is empty
-		if (this._rows.length === 0) {
-			return 0;
-		}
-		let min_width = -1;
-		// sum up the min width of each column
-		for (const column_width of this.get_min_column_widths()) {
-			min_width += column_width;
-			min_width++;
-		}
-		return min_width;
+	get first_row(): TableRow {
+		return this._rows[0];
+	}
+
+	get last_row(): TableRow {
+		return this._rows[this._rows.length - 1];
 	}
 
 	/**
-	 *
-	 * @param cursor The cursor position in the table
 	 * @returns An array of formatted rows
 	 */
-	format_table(): Array<string> {
-		// check if there the table is empty
-		if (this._rows.length === 0) {
-			return [];
-		}
-
+	get_formatted_table(): Array<string> {
 		// check if we have any concatenated rows
 		const formatted_rows: Array<string> = [];
 
