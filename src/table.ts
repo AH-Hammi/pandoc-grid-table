@@ -83,23 +83,20 @@ class TableColumnsConnector {
 
 class ColumnConnectors {
 	list_of_connectors: Array<TableColumnsConnector>;
-	constructor(last_table: Table, new_table: Table) {
-		this.list_of_connectors = [];
 
-		// check if the two lines have the same width
-		if (last_table.last_row.initial_width !== new_table.first_row.initial_width) {
-			throw new Error("The two lines must have the same width");
-			// search the changed lines in the available lines
-			// get the index of the changed line
-			// go over the available lines
-		}
+	private calculate_connectors(
+		last_table: Table,
+		new_table: Table,
+		last_line_widths: Array<number>,
+		new_line_widths: Array<number>,
+	): Array<TableColumnsConnector> {
 		// calculate the column connectors
-		// get initial cell widths of the last line and get the current cell widths
-		const last_line_widths = last_table.last_row.initial_cell_lengths;
-		const new_line_widths = new_table.first_row.initial_cell_lengths;
 
 		let remaining_cells_old = last_line_widths.length;
 		let remaining_cells_new = new_line_widths.length;
+
+		// create a new list of column connectors
+		const list_of_connectors = new Array<TableColumnsConnector>();
 
 		// go through the
 		while (remaining_cells_new > 0 && remaining_cells_old > 0) {
@@ -110,7 +107,7 @@ class ColumnConnectors {
 				// create a new simple connector
 				const new_connector = new TableColumnsConnector(new_table.columns[remaining_cells_new - 1]);
 				new_connector.add_spanned_column(last_table.columns[remaining_cells_old - 1]);
-				this.list_of_connectors.push(new_connector);
+				list_of_connectors.push(new_connector);
 				remaining_cells_old--;
 				remaining_cells_new--;
 				continue;
@@ -130,7 +127,7 @@ class ColumnConnectors {
 					new_connector.add_spanned_column(last_table.columns[remaining_cells_old - counter]);
 					counter--;
 				}
-				this.list_of_connectors.push(new_connector);
+				list_of_connectors.push(new_connector);
 				remaining_cells_old -= counter;
 				remaining_cells_new--;
 				continue;
@@ -153,7 +150,7 @@ class ColumnConnectors {
 					new_connector.add_spanned_column(new_table.columns[remaining_cells_new - counter]);
 					counter--;
 				}
-				this.list_of_connectors.push(new_connector);
+				list_of_connectors.push(new_connector);
 				remaining_cells_new -= counter;
 				remaining_cells_old--;
 				continue;
@@ -163,6 +160,29 @@ class ColumnConnectors {
 				throw new Error("Case not handled yet");
 			}
 		}
+
+		return list_of_connectors;
+	}
+	constructor(last_table: Table, new_table: Table) {
+		this.list_of_connectors = [];
+
+		// get initial cell widths of the last line and get the current cell widths
+		const last_line_widths = last_table.last_row.initial_cell_lengths;
+
+		const offset = new_table.first_row.initial_width - last_table.last_row.initial_width;
+
+		// Iterate as often as there are number of cells in the new table
+		for (let i = 0; i < new_table.first_row.number_of_cells; i++) {
+			const new_line_widths = new_table.first_row.initial_cell_lengths;
+			// Change the perceived width of the column to be initial width - offset
+			new_line_widths[i] -= offset;
+			// Test if we can create a connector
+			try {
+				this.list_of_connectors = this.calculate_connectors(last_table, new_table, last_line_widths, new_line_widths);
+				return;
+			} catch (error) {}
+		}
+		throw new Error("Couldn't create table columns connectors");
 	}
 
 	calculate_widths() {

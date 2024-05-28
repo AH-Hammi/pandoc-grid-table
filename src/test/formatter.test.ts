@@ -284,11 +284,11 @@ suite("Formatter", () => {
 		assert.strictEqual(formatted_table[3], "| Bananas | $1.34 | - built-in wrapper |");
 		assert.strictEqual(formatted_table[4], "+---------+-------+--------------------+");
 	});
-	test("Changed Concatenated Columns", () => {
+	test("Changed Concatenated Columns, remove characters in first column", () => {
 		const table = new ComplexTable();
 
 		table.add_row_raw("+---------------------+----------+");
-		table.add_row_raw("| Properties | Earth    |");
+		table.add_row_raw("| Properties  | Earth    |");
 		table.add_row_raw("+=============+=======+==========+");
 		table.add_row_raw("|             | min   | -89.2 °C |");
 		table.add_row_raw("| Temperature +-------+----------+");
@@ -308,5 +308,62 @@ suite("Formatter", () => {
 		assert.strictEqual(formatted_table[6], "|             +------+----------+");
 		assert.strictEqual(formatted_table[7], "|             | max  | 56.7 °C  |");
 		assert.strictEqual(formatted_table[8], "+-------------+------+----------+");
+	});
+	test("Changed Concatenated Columns, add characters in first column", () => {
+		const table = new ComplexTable();
+
+		table.add_row_raw("+---------------------+----------+");
+		table.add_row_raw("| Properties               | Earth    |");
+		table.add_row_raw("+=============+=======+==========+");
+		table.add_row_raw("|             | min   | -89.2 °C |");
+		table.add_row_raw("| Temperature +-------+----------+");
+		table.add_row_raw("| 1961-1990   | mean  | 14 °C    |");
+		table.add_row_raw("|             +-------+----------+");
+		table.add_row_raw("|             | max   | 56.7 °C  |");
+		table.add_row_raw("+-------------+-------+----------+");
+
+		const formatted_table = table.get_formatted_table();
+		console.log(formatted_table);
+		assert.strictEqual(formatted_table[0], "+--------------------+----------+");
+		assert.strictEqual(formatted_table[1], "| Properties         | Earth    |");
+		assert.strictEqual(formatted_table[2], "+=============+======+==========+");
+		assert.strictEqual(formatted_table[3], "|             | min  | -89.2 °C |");
+		assert.strictEqual(formatted_table[4], "| Temperature +------+----------+");
+		assert.strictEqual(formatted_table[5], "| 1961-1990   | mean | 14 °C    |");
+		assert.strictEqual(formatted_table[6], "|             +------+----------+");
+		assert.strictEqual(formatted_table[7], "|             | max  | 56.7 °C  |");
+		assert.strictEqual(formatted_table[8], "+-------------+------+----------+");
+	});
+	test("Changed Concatenated Columns, remove characters in second column", () => {
+		const table = new ComplexTable();
+
+		table.add_row_raw("+---------------------+----------+");
+		table.add_row_raw("| Properties          | Earth |");
+		table.add_row_raw("+=============+=======+==========+");
+		table.add_row_raw("|             | min   | -89.2 °C |");
+		table.add_row_raw("| Temperature +-------+----------+");
+		table.add_row_raw("| 1961-1990   | mean  | 14 °C    |");
+		table.add_row_raw("|             +-------+----------+");
+		table.add_row_raw("|             | max   | 56.7 °C  |");
+		table.add_row_raw("+-------------+-------+----------+");
+
+		const formatted_table = table.get_formatted_table();
+		console.log(formatted_table);
+		assert.strictEqual(formatted_table[0], "+--------------------+----------+");
+		assert.strictEqual(formatted_table[1], "| Properties         | Earth    |");
+		assert.strictEqual(formatted_table[2], "+=============+======+==========+");
+		assert.strictEqual(formatted_table[3], "|             | min  | -89.2 °C |");
+		assert.strictEqual(formatted_table[4], "| Temperature +------+----------+");
+		assert.strictEqual(formatted_table[5], "| 1961-1990   | mean | 14 °C    |");
+		assert.strictEqual(formatted_table[6], "|             +------+----------+");
+		assert.strictEqual(formatted_table[7], "|             | max  | 56.7 °C  |");
+		assert.strictEqual(formatted_table[8], "+-------------+------+----------+");
+	});
+	test("Changed Concatenated Columns, change in two cells, not a valid change", () => {
+		const table = new ComplexTable();
+
+		table.add_row_raw("+---------------------+----------+");
+		table.add_row_raw("| Properties         | Earth |");
+		assert.throws(() => table.add_row_raw("+=============+=======+==========+"));
 	});
 });
