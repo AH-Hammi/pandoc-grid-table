@@ -182,7 +182,7 @@ class ColumnConnectors {
 				return;
 			} catch (error) {}
 		}
-		throw new Error("Couldn't create table columns connectors");
+		throw new Error("Couldn't create table columns connectors, More then one cell was changed");
 	}
 
 	calculate_widths() {
