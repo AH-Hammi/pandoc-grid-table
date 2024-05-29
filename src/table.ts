@@ -321,12 +321,3 @@ export class Table {
 		return formatted_rows;
 	}
 }
-
-// export function format_table(
-// 	editor: vscode.TextEditor,
-// 	doc: vscode.TextDocument,
-// 	table_range: vscode.Range,
-// ) {
-// 	throw new Error("Method not implemented.");
-// 	// replace the table with the formatted table
-// }
