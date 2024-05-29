@@ -98,8 +98,8 @@ upcoming
 ## Upcoming Features
 
 * [x] Jump to next cell
-* [ ] Jump to previous cell
-* [ ] Format table
+* [x] Jump to previous cell
+* [x] Format table
 * [ ] Add a snippet to add a new table
 * [ ] Add a new row after tabing from the last cell
 * [ ] [Create multiline cell](#create-multiline-cell)
@@ -110,6 +110,8 @@ upcoming
 * [ ] Insert Row below
 * [ ] Delete Column
 * [ ] Delete Row
+* [ ] Paste From Excel
+* [ ] Paste from CSV
 
 ### Create multiline cell
 
