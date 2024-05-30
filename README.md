@@ -101,17 +101,16 @@ upcoming
 * [x] Jump to previous cell
 * [x] Format table
 * [ ] Add a snippet to add a new table
-* [ ] Add a new row after tabing from the last cell
 * [ ] [Create multiline cell](#create-multiline-cell)
-* [ ] Add alignment to cells depending on the header row
-* [ ] Insert Column to the left
-* [ ] Insert Column to the right
-* [ ] Insert Row above
-* [ ] Insert Row below
+* [ ] Insert Column
+* [ ] Insert Row
 * [ ] Delete Column
 * [ ] Delete Row
-* [ ] Paste From Excel
+* [ ] Add a new row after tabing from the last cell
+* [ ] Paste from Excel
 * [ ] Paste from CSV
+* [ ] Concatenation of Cells
+* [ ] Add alignment to cells depending on the header row
 
 ### Create multiline cell
 
