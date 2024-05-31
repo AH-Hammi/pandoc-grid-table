@@ -103,7 +103,7 @@ upcoming
 * [x] Add a snippet to add a new table
 * [x] [Create multiline cell](#create-multiline-cell)
 * [ ] Insert Column
-* [ ] Insert Row
+* [x] Insert Row
 * [ ] Delete Column
 * [ ] Delete Row
 * [ ] Add a new row after tabing from the last cell

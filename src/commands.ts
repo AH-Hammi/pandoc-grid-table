@@ -181,3 +181,108 @@ export function add_line_to_cell(): void {
 		last_char,
 	);
 }
+
+export function add_row_above(): void {
+	const editor = vscode.window.activeTextEditor as vscode.TextEditor;
+	const doc = editor.document;
+	const cur_selection = editor.selection;
+
+	// get the table range
+	const table_range = text.get_table_range(doc, cur_selection);
+
+	// check if the cursor is in a table
+	if (!table_range) {
+		return;
+	}
+
+	// get current line text
+	const line = doc.lineAt(cur_selection.active.line).text;
+
+	// get the cell index
+	const cell_index = text.get_cell_index_in_line(line, cur_selection.active.character);
+
+	// replace all characters with " " except "|"
+	const new_line = line
+		.split("")
+		.map((char) => (char === "|" ? char : " "))
+		.join("");
+	// create a row separator by replacing all " " with "-" and "|" with "+"
+	const row_separator = new_line.replaceAll(" ", "-").replaceAll("|", "+");
+
+	// search the previous row separator
+	let upmost_line_in_cell = cur_selection.active.line;
+	while (upmost_line_in_cell - 1 >= table_range.start.line) {
+		const line_text = doc.lineAt(upmost_line_in_cell - 1).text;
+		if (line_text.charAt(0) === "+") {
+			// Found the horizontal line to the top of the cell
+			// Search next horizontal line
+			break;
+		}
+		upmost_line_in_cell--;
+	}
+
+	editor.edit((editBuilder) => {
+		editBuilder.insert(new vscode.Position(upmost_line_in_cell, 0), `${new_line}\n${row_separator}\n`);
+	});
+
+	// get the selection range
+	const [first_char, last_char] = text.get_selection_range(line, cell_index);
+
+	// select the cell
+	editor.selection = new vscode.Selection(upmost_line_in_cell, first_char, upmost_line_in_cell, last_char);
+}
+
+export function add_row_below(): void {
+	const editor = vscode.window.activeTextEditor as vscode.TextEditor;
+	const doc = editor.document;
+	const cur_selection = editor.selection;
+
+	// get the table range
+	const table_range = text.get_table_range(doc, cur_selection);
+
+	// check if the cursor is in a table
+	if (!table_range) {
+		return;
+	}
+
+	// get current line text
+	const line = doc.lineAt(cur_selection.active.line).text;
+
+	// get the cell index
+	const cell_index = text.get_cell_index_in_line(line, cur_selection.active.character);
+
+	// replace all characters with " " except "|"
+	const new_line = line
+		.split("")
+		.map((char) => (char === "|" ? char : " "))
+		.join("");
+	// create a row separator by replacing all " " with "-" and "|" with "+"
+	const row_separator = new_line.replaceAll(" ", "-").replaceAll("|", "+");
+
+	// search the previous row separator
+	let down_most_line_in_cell = cur_selection.active.line;
+	while (down_most_line_in_cell + 1 < table_range.end.line) {
+		const line_text = doc.lineAt(down_most_line_in_cell + 1).text;
+		if (line_text.charAt(0) === "+") {
+			// Found the horizontal line to the top of the cell
+			// Search next horizontal line
+			break;
+		}
+		down_most_line_in_cell++;
+	}
+
+	editor.edit((editBuilder) => {
+		editBuilder.insert(new vscode.Position(down_most_line_in_cell + 1, 0), `${row_separator}\n${new_line}\n`);
+	});
+
+	// get the selection range
+	const [first_char, last_char] = text.get_selection_range(line, cell_index);
+
+	// select the cell
+	editor.selection = new vscode.Selection(
+		down_most_line_in_cell + 2,
+		first_char,
+		down_most_line_in_cell + 2,
+		last_char,
+	);
+}

@@ -10,6 +10,8 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand("pandoc-grid-table.formatTable", () => commands.format_table()),
 		vscode.commands.registerCommand("pandoc-grid-table.insertNewTable", () => commands.insert_new_table()),
 		vscode.commands.registerCommand("pandoc-grid-table.addLineToCell", () => commands.add_line_to_cell()),
+		vscode.commands.registerCommand("pandoc-grid-table.addRowAbove", () => commands.add_row_above()),
+		vscode.commands.registerCommand("pandoc-grid-table.addRowBelow", () => commands.add_row_below()),
 	);
 }
 

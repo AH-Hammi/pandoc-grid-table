@@ -30,6 +30,14 @@
 			{
 				"command": "pandoc-grid-table.addLineToCell",
 				"title": "Add Line To Cell"
+			},
+			{
+				"command": "pandoc-grid-table.addRowAbove",
+				"title": "Add Row Above"
+			},
+			{
+				"command": "pandoc-grid-table.addRowBelow",
+				"title": "Add Row Below"
 			}
 		],
 		"keybindings": [
