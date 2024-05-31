@@ -1,40 +1,7 @@
 import * as vscode from "vscode";
 
-/// Check if the cursor is in a table
-export function is_in_table(doc: vscode.TextDocument, cur_selection: vscode.Selection): boolean {
-	// check if the left most char of the current line is a '|'
-	const line_text = doc.lineAt(cur_selection.active.line).text;
-	if (line_text.charAt(0) !== "|") {
-		console.log("Exited because line does not start with '|'");
-		return false;
-	}
-
-	// go the lines up to the start of the table
-	// The table should start with "+-"
-	// go up until we found a "+"
-	let line_num = cur_selection.active.line;
-	while (line_num > 0) {
-		const line_text = doc.lineAt(line_num).text;
-		if (line_text.charAt(0) === "+") {
-			// console.log(`Found a + at line ${line_num + 1}`);
-			break;
-		}
-		if (line_text.charAt(0) !== "|") {
-			console.log("Exited because line does not start with '|'");
-			return false;
-		}
-		line_num--;
-	}
-	return true;
-}
-
 // Get the table range
 export function get_table_range(doc: vscode.TextDocument, cur_selection: vscode.Selection): vscode.Range | undefined {
-	// Check if the cursor is in a table
-	if (!is_in_table(doc, cur_selection)) {
-		console.log("Not in a table");
-		return undefined;
-	}
 	// Search top of the table
 	// Go up the first column until we do not find a "|" or a "+"
 	// The start corner will be if above the "+" is not a "|"
@@ -205,59 +172,6 @@ function find_previous_cell_in_current_line(line_text: string, current_col: numb
 	// console.log(`Found | at columns ${start_col} and ${end_col}`);
 	return [start_col, end_col];
 }
-
-// export function get_cell_id(doc: vscode.TextDocument, cur_selection: vscode.Selection): number | undefined {
-// 	const table_range = get_table_range(doc, cur_selection);
-// 	if (!table_range) {
-// 		return undefined;
-// 	}
-
-// 	const line_text = doc.lineAt(cur_selection.active.line).text;
-// 	// count the number of "|" before the cursor
-// 	let count = -1;
-// 	for (let i = 0; i < cur_selection.active.character; i++) {
-// 		if (line_text.charAt(i) === "|") {
-// 			count++;
-// 		}
-// 	}
-// 	console.log(`Found cell id ${count}`);
-// 	return count;
-// }
-
-// export function get_selection_from_cell_id(
-// 	doc: vscode.TextDocument,
-// 	cur_selection: vscode.Selection,
-// 	cell_id: number,
-// ): vscode.Selection | undefined {
-// 	const table_range = get_table_range(doc, cur_selection);
-// 	if (!table_range) {
-// 		return;
-// 	}
-
-// 	const line_text = doc.lineAt(cur_selection.active.line).text;
-// 	let count = -1;
-// 	let first_char = 0;
-// 	let last_char = 0;
-// 	// go through the line and count the number of "|"
-// 	for (let i = 0; i < line_text.length; i++) {
-// 		console.log(`Checking ${line_text.charAt(i)}`);
-// 		if (line_text.charAt(i) === "|") {
-// 			count++;
-// 			if (count === cell_id) {
-// 				first_char = i + 1;
-// 				continue;
-// 			}
-// 			if (count - 1 === cell_id) {
-// 				last_char = i - 1;
-// 				break;
-// 			}
-// 		}
-// 	}
-
-// 	console.log(`Found cell id ${cell_id} from ${first_char} to ${last_char}`);
-
-// 	return new vscode.Selection(cur_selection.active.line, first_char, cur_selection.active.line, last_char);
-// }
 
 // find next cell , returns the range for the next cell
 export function get_next_cell_range(
