@@ -22,6 +22,10 @@
 			{
 				"command": "pandoc-grid-table.formatTable",
 				"title": "Format Table"
+			},
+			{
+				"command": "pandoc-grid-table.insertNewTable",
+				"title": "Insert New Table"
 			}
 		],
 		"keybindings": [

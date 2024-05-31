@@ -100,7 +100,7 @@ upcoming
 * [x] Jump to next cell
 * [x] Jump to previous cell
 * [x] Format table
-* [ ] Add a snippet to add a new table
+* [x] Add a snippet to add a new table
 * [ ] [Create multiline cell](#create-multiline-cell)
 * [ ] Insert Column
 * [ ] Insert Row

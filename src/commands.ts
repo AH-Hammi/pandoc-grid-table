@@ -107,32 +107,54 @@ export function format_table(): void {
 	editor.selection = new vscode.Selection(cur_selection.active.line, first_char, cur_selection.active.line, last_char);
 }
 
-// export function add_row_below(): void {
-// 	const editor = vscode.window.activeTextEditor as vscode.TextEditor;
-// 	const doc = editor.document;
-// 	const cur_selection = editor.selection;
+export function insert_new_table(): void {
+	const editor = vscode.window.activeTextEditor as vscode.TextEditor;
+	const doc = editor.document;
+	const cur_selection = editor.selection;
 
-// 	// check if the cursor is in a table
-// 	if (!text.is_in_table(doc, cur_selection)) {
-// 		return;
-// 	}
+	// open a new input field to enter number of columns
+	let number_of_columns: number;
+	let number_of_rows: number;
 
-// 	const current_row = doc.lineAt(cur_selection.active.line).text;
+	const input_columns = vscode.window.showInputBox({ prompt: "Enter number of columns" });
 
-// 	if (current_row.charAt(0) !== "|") {
-// 		return;
-// 	}
+	const input_rows = Promise.all([input_columns]).then(() => {
+		return vscode.window.showInputBox({ prompt: "Enter number of rows" });
+	});
 
-// 	// format the table
-// 	format_table();
+	Promise.all([input_columns, input_rows])
+		.then(([columns, rows]) => {
+			if (columns === undefined || rows === undefined) {
+				return;
+			}
+			number_of_columns = Number.parseInt(columns);
+			number_of_rows = Number.parseInt(rows);
+		})
+		.then(() => {
+			if (
+				number_of_columns === undefined ||
+				number_of_rows === undefined ||
+				number_of_columns <= 0 ||
+				number_of_rows <= 0
+			) {
+				return;
+			}
 
-// 	// search the lines below and check if there is a line that starts with "+"
-// 	let line_num = cur_selection.active.line + 1;
-// 	while (line_num < doc.lineCount) {
-// 		const line = doc.lineAt(line_num);
-// 		if (line.text.charAt(0) !== "|") {
-// 			break;
-// 		}
-// 		line_num++;
-// 	}
-// }
+			const row_separator = `${"+---".repeat(number_of_columns)}+\n`;
+
+			const row = `${row_separator}${"|   ".repeat(number_of_columns)}|\n`;
+
+			const table = `${row.repeat(number_of_rows)}${row_separator}`;
+
+			editor.edit((editBuilder) => {
+				editBuilder.insert(cur_selection.active, `${table}`);
+			});
+
+			// select first cell
+			editor.selection = new vscode.Selection(cur_selection.active.line + 1, 2, cur_selection.active.line + 1, 3);
+		});
+
+	// open a new input field to enter number of rows
+
+	// insert the table
+}
