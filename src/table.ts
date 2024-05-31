@@ -124,11 +124,11 @@ class ColumnConnectors {
 				const new_connector = new TableColumnsConnector(new_table.columns[remaining_cells_new - 1]);
 				counter--;
 				while (counter > 0) {
-					new_connector.add_spanned_column(last_table.columns[remaining_cells_old - counter]);
+					remaining_cells_old--;
+					new_connector.add_spanned_column(last_table.columns[remaining_cells_old]);
 					counter--;
 				}
 				list_of_connectors.push(new_connector);
-				remaining_cells_old -= counter;
 				remaining_cells_new--;
 				continue;
 			}
@@ -147,11 +147,11 @@ class ColumnConnectors {
 				const new_connector = new TableColumnsConnector(last_table.columns[remaining_cells_old - 1]);
 				counter--;
 				while (counter > 0) {
-					new_connector.add_spanned_column(new_table.columns[remaining_cells_new - counter]);
+					remaining_cells_new--;
+					new_connector.add_spanned_column(new_table.columns[remaining_cells_new]);
 					counter--;
 				}
 				list_of_connectors.push(new_connector);
-				remaining_cells_new -= counter;
 				remaining_cells_old--;
 				continue;
 			}

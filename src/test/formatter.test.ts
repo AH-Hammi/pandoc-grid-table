@@ -366,4 +366,30 @@ suite("Formatter", () => {
 		table.add_row_raw("| Properties         | Earth |");
 		assert.throws(() => table.add_row_raw("+=============+=======+==========+"));
 	});
+	test("Concatenated Columns and Multiple Rows", () => {
+		const table = new ComplexTable();
+		table.add_row_raw("+---------------------+-----------------------+");
+		table.add_row_raw("| Location            | Temperature 1961-1990 |");
+		table.add_row_raw("|                     | in degree Celsius     |");
+		table.add_row_raw("|                     +-------+-------+-------+");
+		table.add_row_raw("|                     | min   | mean  | max   |");
+		table.add_row_raw("+=====================+=======+=======+=======+");
+		table.add_row_raw("| Argentina           | -89.2 | N/A   | 19.8  |");
+		table.add_row_raw("+---------------------+-------+-------+-------+");
+		table.add_row_raw("| Earth               | -89.2 | 14    | 56.7  |");
+		table.add_row_raw("+---------------------+-------+-------+-------+");
+
+		const formatted_table = table.get_formatted_table();
+		console.log(formatted_table);
+		assert.strictEqual(formatted_table[0], "+-----------+-----------------------+");
+		assert.strictEqual(formatted_table[1], "| Location  | Temperature 1961-1990 |");
+		assert.strictEqual(formatted_table[2], "|           | in degree Celsius     |");
+		assert.strictEqual(formatted_table[3], "|           +---------+------+------+");
+		assert.strictEqual(formatted_table[4], "|           | min     | mean | max  |");
+		assert.strictEqual(formatted_table[5], "+===========+=========+======+======+");
+		assert.strictEqual(formatted_table[6], "| Argentina | -89.2   | N/A  | 19.8 |");
+		assert.strictEqual(formatted_table[7], "+-----------+---------+------+------+");
+		assert.strictEqual(formatted_table[8], "| Earth     | -89.2   | 14   | 56.7 |");
+		assert.strictEqual(formatted_table[9], "+-----------+---------+------+------+");
+	});
 });
