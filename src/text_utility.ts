@@ -193,6 +193,17 @@ export function get_next_cell_range(
 	let current_line: number | undefined = cur_selection.active.line;
 	let first_char = cur_selection.active.character;
 	while (true) {
+		// check if we are at the top most line of the current row
+		// move up until we find a row separator
+		while (current_line >= table_range.start.line) {
+			const line_text = doc.lineAt(current_line - 1).text;
+			if (line_text.charAt(0) === "+") {
+				// Found the horizontal line to the top of the cell
+				// Search next horizontal line
+				break;
+			}
+			current_line--;
+		}
 		// check if there is another cell in the current line
 		start_end = find_next_cell_in_current_line(doc.lineAt(current_line).text, first_char);
 		// if there is another cell in the current line
@@ -237,6 +248,17 @@ export function get_previous_cell_range(
 	let current_line: number | undefined = cur_selection.active.line;
 	let first_char = cur_selection.active.character;
 	while (true) {
+		// check if we are at the top most line of the current row
+		// move up until we find a row separator
+		while (current_line >= table_range.start.line) {
+			const line_text = doc.lineAt(current_line - 1).text;
+			if (line_text.charAt(0) === "+") {
+				// Found the horizontal line to the top of the cell
+				// Search next horizontal line
+				break;
+			}
+			current_line--;
+		}
 		// check if there is another cell in the current line
 		start_end = find_previous_cell_in_current_line(doc.lineAt(current_line).text, first_char);
 		// if there is another cell in the current line
@@ -261,4 +283,35 @@ export function get_previous_cell_range(
 		new vscode.Position(current_line, start_col + 2),
 		new vscode.Position(current_line, end_col - 1),
 	);
+}
+
+export function get_cell_index_in_line(line_text: string, cur_char: number): number {
+	let cell_index = 0;
+	for (let i = 0; i < cur_char; i++) {
+		if (line_text.charAt(i) === "|") {
+			cell_index++;
+		}
+	}
+	return cell_index;
+}
+
+export function get_selection_range(line_text: string, cell_index: number): [number, number] {
+	let first_char = 0;
+	let last_char = 0;
+	let count = 0;
+	// go through the line and count the number of "|"
+	for (let i = 0; i < line_text.length; i++) {
+		if (line_text.charAt(i) === "|") {
+			count++;
+			if (count === cell_index) {
+				first_char = i + 2;
+			}
+			if (count === cell_index + 1) {
+				last_char = i - 1;
+				break;
+			}
+		}
+	}
+
+	return [first_char, last_char];
 }

@@ -26,6 +26,10 @@
 			{
 				"command": "pandoc-grid-table.insertNewTable",
 				"title": "Insert New Table"
+			},
+			{
+				"command": "pandoc-grid-table.addLineToCell",
+				"title": "Add Line To Cell"
 			}
 		],
 		"keybindings": [
@@ -37,6 +41,11 @@
 			{
 				"command": "pandoc-grid-table.previousCell",
 				"key": "shift+tab",
+				"when": "editorTextFocus && !editorReadonly && !editorTabMovesFocus && !suggestWidgetMultipleSuggestions && !suggestWidgetVisible && !inSnippetMode"
+			},
+			{
+				"command": "pandoc-grid-table.addLineToCell",
+				"key": "enter",
 				"when": "editorTextFocus && !editorReadonly && !editorTabMovesFocus && !suggestWidgetMultipleSuggestions && !suggestWidgetVisible && !inSnippetMode"
 			}
 		]

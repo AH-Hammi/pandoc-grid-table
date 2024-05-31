@@ -60,12 +60,11 @@ export function format_table(): void {
 	}
 
 	// count the number of "|" before the cursor
-	let cell_index = 0;
-	for (let i = 0; i < cur_selection.active.character; i++) {
-		if (doc.lineAt(cur_selection.active.line).text.charAt(i) === "|") {
-			cell_index++;
-		}
-	}
+	const cell_index = text.get_cell_index_in_line(
+		doc.lineAt(cur_selection.active.line).text,
+		cur_selection.active.character,
+	);
+
 	const current_row_index = cur_selection.active.line - table_range.start.line;
 
 	const table = new formatter.ComplexTable();
@@ -85,23 +84,7 @@ export function format_table(): void {
 	});
 
 	const current_row = formatted_table[current_row_index];
-	let first_char = 0;
-	let last_char = 0;
-
-	let count = 0;
-	// go through the line and count the number of "|"
-	for (let i = 0; i < current_row.length; i++) {
-		if (current_row.charAt(i) === "|") {
-			count++;
-			if (count === cell_index) {
-				first_char = i + 2;
-			}
-			if (count === cell_index + 1) {
-				last_char = i - 1;
-				break;
-			}
-		}
-	}
+	const [first_char, last_char] = text.get_selection_range(current_row, cell_index);
 
 	// select the cell
 	editor.selection = new vscode.Selection(cur_selection.active.line, first_char, cur_selection.active.line, last_char);
@@ -109,7 +92,6 @@ export function format_table(): void {
 
 export function insert_new_table(): void {
 	const editor = vscode.window.activeTextEditor as vscode.TextEditor;
-	const doc = editor.document;
 	const cur_selection = editor.selection;
 
 	// open a new input field to enter number of columns
@@ -153,4 +135,49 @@ export function insert_new_table(): void {
 			// select first cell
 			editor.selection = new vscode.Selection(cur_selection.active.line + 1, 2, cur_selection.active.line + 1, 3);
 		});
+}
+
+export function add_line_to_cell(): void {
+	const editor = vscode.window.activeTextEditor as vscode.TextEditor;
+	const doc = editor.document;
+	const cur_selection = editor.selection;
+
+	// get the table range
+	const table_range = text.get_table_range(doc, cur_selection);
+
+	// check if the cursor is in a table
+	if (!table_range) {
+		return;
+	}
+
+	// get current line text
+	const line = doc.lineAt(cur_selection.active.line).text;
+
+	// get the cell index
+	const cell_index = text.get_cell_index_in_line(line, cur_selection.active.character);
+
+	// check if we need to create a new line or if we already have one
+	if (doc.lineAt(cur_selection.active.line + 1).text.charAt(0) !== "|") {
+		// a new line already exists
+		// replace all characters with " " except "|"
+		const new_line = line
+			.split("")
+			.map((char) => (char === "|" ? char : " "))
+			.join("");
+
+		editor.edit((editBuilder) => {
+			editBuilder.insert(new vscode.Position(cur_selection.active.line + 1, 0), `${new_line}\n`);
+		});
+	}
+
+	// get the selection range
+	const [first_char, last_char] = text.get_selection_range(line, cell_index);
+
+	// select the cell
+	editor.selection = new vscode.Selection(
+		cur_selection.active.line + 1,
+		first_char,
+		cur_selection.active.line + 1,
+		last_char,
+	);
 }
