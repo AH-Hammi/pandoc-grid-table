@@ -101,7 +101,7 @@ upcoming
 * [x] Jump to previous cell
 * [x] Format table
 * [x] Add a snippet to add a new table
-* [ ] [Create multiline cell](#create-multiline-cell)
+* [x] [Create multiline cell](#create-multiline-cell)
 * [ ] Insert Column
 * [ ] Insert Row
 * [ ] Delete Column
