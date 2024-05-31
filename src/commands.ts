@@ -153,8 +153,4 @@ export function insert_new_table(): void {
 			// select first cell
 			editor.selection = new vscode.Selection(cur_selection.active.line + 1, 2, cur_selection.active.line + 1, 3);
 		});
-
-	// open a new input field to enter number of rows
-
-	// insert the table
 }
