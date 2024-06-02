@@ -164,10 +164,6 @@ function find_previous_cell_in_current_line(line_text: string, current_col: numb
 			break;
 		}
 		start_col--;
-		if (start_col < 0) {
-			// console.log(`Couldn't find previous cell in current line`);
-			return undefined;
-		}
 	}
 	// console.log(`Found | at columns ${start_col} and ${end_col}`);
 	return [start_col, end_col];
@@ -286,7 +282,7 @@ export function get_previous_cell_range(
 }
 
 export function get_cell_index_in_line(line_text: string, cur_char: number): number {
-	let cell_index = 0;
+	let cell_index = -1;
 	for (let i = 0; i < cur_char; i++) {
 		if (line_text.charAt(i) === "|") {
 			cell_index++;
@@ -298,7 +294,7 @@ export function get_cell_index_in_line(line_text: string, cur_char: number): num
 export function get_selection_range(line_text: string, cell_index: number): [number, number] {
 	let first_char = 0;
 	let last_char = 0;
-	let count = 0;
+	let count = -1;
 	// go through the line and count the number of "|"
 	for (let i = 0; i < line_text.length; i++) {
 		if (line_text.charAt(i) === "|") {
