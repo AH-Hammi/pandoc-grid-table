@@ -22,7 +22,7 @@ export function next_cell(): void {
 	editor.selection = new vscode.Selection(next_cell_range.start, next_cell_range.end);
 
 	// Format the table
-	format_table();
+	format_table(editor);
 }
 
 // A function to navigate to the previous cell
@@ -44,13 +44,19 @@ export function previous_cell(): void {
 	// select the previous cell
 	editor.selection = new vscode.Selection(previous_cell_range.start, previous_cell_range.end);
 	// Format the table
-	format_table();
+	format_table(editor);
 }
 
 // A function to format the table
-export function format_table(): void {
-	const editor = vscode.window.activeTextEditor as vscode.TextEditor;
-	const doc = editor.document;
+export function format_table(param_editor?: vscode.TextEditor, param_doc?: vscode.TextDocument): void {
+	let editor = param_editor;
+	if (!editor) {
+		editor = vscode.window.activeTextEditor as vscode.TextEditor;
+	}
+	let doc = param_doc;
+	if (!doc) {
+		doc = editor.document;
+	}
 	const cur_selection = editor.selection;
 	const table_range = text.get_table_range(doc, cur_selection);
 

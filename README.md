@@ -102,15 +102,23 @@ upcoming
 * [x] Format table
 * [x] Add a snippet to add a new table
 * [x] [Create multiline cell](#create-multiline-cell)
-* [ ] Insert Column
 * [x] Insert Row
-* [ ] Delete Column
 * [ ] Delete Row
+* [ ] Insert Column
+* [ ] Delete Column
 * [ ] Add a new row after tabing from the last cell
+  * [ ] Make it an option
 * [ ] Paste from Excel
 * [ ] Paste from CSV
 * [ ] Concatenation of Cells
 * [ ] Add alignment to cells depending on the header row
+* [ ] Make functions available to click on while in a cell
+  * [ ] Insert Row Above
+  * [ ] Insert Row Below
+  * [ ] Insert Column Left
+  * [ ] Insert Column Right
+  * [ ] Delete Row
+  * [ ] Delete Column
 
 ### Create multiline cell
 
