@@ -15,6 +15,12 @@ export function next_cell(): void {
 
 	// check if a next cell exists
 	if (!next_cell_range) {
+		// no next cell exists
+		// check configuration if we should insert a new row
+		if (vscode.workspace.getConfiguration("pandoc-grid-table").get("autoInsertNewRow")?.valueOf() === true) {
+			// insert a new row
+			add_row_below(editor, 0);
+		}
 		return;
 	}
 
@@ -238,8 +244,8 @@ export function add_row_above(): void {
 	editor.selection = new vscode.Selection(upmost_line_in_cell, first_char, upmost_line_in_cell, last_char);
 }
 
-export function add_row_below(): void {
-	const editor = vscode.window.activeTextEditor as vscode.TextEditor;
+export function add_row_below(param_editor?: vscode.TextEditor, param_cell_index?: number) {
+	const editor = param_editor || (vscode.window.activeTextEditor as vscode.TextEditor);
 	const doc = editor.document;
 	const cur_selection = editor.selection;
 
@@ -254,8 +260,15 @@ export function add_row_below(): void {
 	// get current line text
 	const line = doc.lineAt(cur_selection.active.line).text;
 
-	// get the cell index
-	const cell_index = text.get_cell_index_in_line(line, cur_selection.active.character);
+	let cell_index = param_cell_index;
+
+	if (cell_index === undefined) {
+		// get the cell index
+		cell_index = text.get_cell_index_in_line(line, cur_selection.active.character);
+		if (cell_index === -1) {
+			return;
+		}
+	}
 
 	// replace all characters with " " except "|"
 	const new_line = line

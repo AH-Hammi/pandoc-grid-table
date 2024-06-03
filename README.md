@@ -106,8 +106,8 @@ upcoming
 * [ ] Delete Row
 * [ ] Insert Column
 * [ ] Delete Column
-* [ ] Add a new row after tabing from the last cell
-  * [ ] Make it an option
+* [x] Add a new row after tabing from the last cell
+  * [x] Make it an option
 * [ ] Paste from Excel
 * [ ] Paste from CSV
 * [ ] Concatenation of Cells
