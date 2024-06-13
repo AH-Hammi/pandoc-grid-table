@@ -305,3 +305,19 @@ export function add_row_below(param_editor?: vscode.TextEditor, param_cell_index
 		last_char,
 	);
 }
+
+export function isInTable(): boolean {
+	const editor = vscode.window.activeTextEditor as vscode.TextEditor;
+	const doc = editor.document;
+	const cur_selection = editor.selection;
+
+	// get the table range
+	const table_range = text.get_table_range(doc, cur_selection);
+
+	// check if the cursor is in a table
+	if (!table_range) {
+		return false;
+	}
+
+	return true;
+}

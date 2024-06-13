@@ -47,17 +47,17 @@
 			{
 				"command": "pandoc-grid-table.nextCell",
 				"key": "tab",
-				"when": "editorTextFocus && !editorReadonly && !editorTabMovesFocus && !suggestWidgetMultipleSuggestions && !suggestWidgetVisible && !inSnippetMode"
+				"when": "editorTextFocus && !editorReadonly && !editorTabMovesFocus && !suggestWidgetMultipleSuggestions && !suggestWidgetVisible && !inSnippetMode && pandoc-grid-table.isInTable"
 			},
 			{
 				"command": "pandoc-grid-table.previousCell",
 				"key": "shift+tab",
-				"when": "editorTextFocus && !editorReadonly && !editorTabMovesFocus && !suggestWidgetMultipleSuggestions && !suggestWidgetVisible && !inSnippetMode"
+				"when": "editorTextFocus && !editorReadonly && !editorTabMovesFocus && !suggestWidgetMultipleSuggestions && !suggestWidgetVisible && !inSnippetMode && pandoc-grid-table.isInTable"
 			},
 			{
 				"command": "pandoc-grid-table.addLineToCell",
 				"key": "enter",
-				"when": "editorTextFocus && !editorReadonly && !editorTabMovesFocus && !suggestWidgetMultipleSuggestions && !suggestWidgetVisible && !inSnippetMode"
+				"when": "editorTextFocus && !editorReadonly && !editorTabMovesFocus && !suggestWidgetMultipleSuggestions && !suggestWidgetVisible && !inSnippetMode && pandoc-grid-table.isInTable"
 			}
 		],
 		"configuration": {

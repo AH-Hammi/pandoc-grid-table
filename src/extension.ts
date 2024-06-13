@@ -5,6 +5,12 @@ export function activate(context: vscode.ExtensionContext) {
 	console.log('Congratulations, your extension "pandoc-grid-table" is now active!');
 
 	context.subscriptions.push(
+		vscode.window.onDidChangeTextEditorSelection(() => {
+			vscode.commands.executeCommand("setContext", "pandoc-grid-table.isInTable", commands.isInTable());
+		}),
+	);
+
+	context.subscriptions.push(
 		vscode.commands.registerCommand("pandoc-grid-table.nextCell", () => commands.next_cell()),
 		vscode.commands.registerCommand("pandoc-grid-table.previousCell", () => commands.previous_cell()),
 		vscode.commands.registerCommand("pandoc-grid-table.formatTable", () => commands.format_table()),
