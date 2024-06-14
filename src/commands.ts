@@ -2,55 +2,20 @@ import * as vscode from "vscode";
 import * as text from "./text_utility";
 import * as formatter from "./table";
 
-// A function to navigate to the next cell
-export function next_cell(): void {
+export function isInTable(): boolean {
 	const editor = vscode.window.activeTextEditor as vscode.TextEditor;
-
 	const doc = editor.document;
-
 	const cur_selection = editor.selection;
 
-	// get the next cell range
-	const next_cell_range = text.get_next_cell_range(doc, cur_selection);
+	// get the table range
+	const table_range = text.get_table_range(doc, cur_selection);
 
-	// check if a next cell exists
-	if (!next_cell_range) {
-		// no next cell exists
-		// check configuration if we should insert a new row
-		if (vscode.workspace.getConfiguration("pandoc-grid-table").get("autoInsertNewRow")?.valueOf() === true) {
-			// insert a new row
-			add_row_below(editor, 0);
-		}
-		return;
+	// check if the cursor is in a table
+	if (!table_range) {
+		return false;
 	}
 
-	// select the next cell
-	editor.selection = new vscode.Selection(next_cell_range.start, next_cell_range.end);
-
-	// Format the table
-	format_table(editor);
-}
-
-// A function to navigate to the previous cell
-export function previous_cell(): void {
-	const editor = vscode.window.activeTextEditor as vscode.TextEditor;
-
-	const doc = editor.document;
-
-	const cur_selection = editor.selection;
-
-	// get the previous cell range
-	const previous_cell_range = text.get_previous_cell_range(doc, cur_selection);
-
-	// check if a previous cell exists
-	if (!previous_cell_range) {
-		return;
-	}
-
-	// select the previous cell
-	editor.selection = new vscode.Selection(previous_cell_range.start, previous_cell_range.end);
-	// Format the table
-	format_table(editor);
+	return true;
 }
 
 // A function to format the table
@@ -102,51 +67,41 @@ export function format_table(param_editor?: vscode.TextEditor, param_doc?: vscod
 	editor.selection = new vscode.Selection(cur_selection.active.line, first_char, cur_selection.active.line, last_char);
 }
 
-export function insert_new_table(): void {
+export async function insert_new_table(param_columns?: string, param_rows?: string): Promise<void> {
 	const editor = vscode.window.activeTextEditor as vscode.TextEditor;
 	const cur_selection = editor.selection;
 
-	// open a new input field to enter number of columns
-	let number_of_columns: number;
-	let number_of_rows: number;
+	// if not defined, show input box
+	const input_columns = param_columns || (await vscode.window.showInputBox({ prompt: "Enter number of columns" }));
 
-	const input_columns = vscode.window.showInputBox({ prompt: "Enter number of columns" });
+	const input_rows = param_rows || (await vscode.window.showInputBox({ prompt: "Enter number of rows" }));
 
-	const input_rows = Promise.all([input_columns]).then(() => {
-		return vscode.window.showInputBox({ prompt: "Enter number of rows" });
+	if (input_columns === undefined || input_rows === undefined) {
+		return;
+	}
+	const number_of_columns = Number.parseInt(input_columns);
+	const number_of_rows = Number.parseInt(input_rows);
+	if (
+		number_of_columns === undefined ||
+		number_of_rows === undefined ||
+		number_of_columns <= 0 ||
+		number_of_rows <= 0
+	) {
+		return;
+	}
+
+	const row_separator = `${"+---".repeat(number_of_columns)}+\n`;
+
+	const row = `${row_separator}${"|   ".repeat(number_of_columns)}|\n`;
+
+	const table = `${row.repeat(number_of_rows)}${row_separator}`;
+
+	editor.edit((editBuilder) => {
+		editBuilder.insert(cur_selection.active, `${table}`);
 	});
 
-	Promise.all([input_columns, input_rows])
-		.then(([columns, rows]) => {
-			if (columns === undefined || rows === undefined) {
-				return;
-			}
-			number_of_columns = Number.parseInt(columns);
-			number_of_rows = Number.parseInt(rows);
-		})
-		.then(() => {
-			if (
-				number_of_columns === undefined ||
-				number_of_rows === undefined ||
-				number_of_columns <= 0 ||
-				number_of_rows <= 0
-			) {
-				return;
-			}
-
-			const row_separator = `${"+---".repeat(number_of_columns)}+\n`;
-
-			const row = `${row_separator}${"|   ".repeat(number_of_columns)}|\n`;
-
-			const table = `${row.repeat(number_of_rows)}${row_separator}`;
-
-			editor.edit((editBuilder) => {
-				editBuilder.insert(cur_selection.active, `${table}`);
-			});
-
-			// select first cell
-			editor.selection = new vscode.Selection(cur_selection.active.line + 1, 2, cur_selection.active.line + 1, 3);
-		});
+	// select first cell
+	editor.selection = new vscode.Selection(cur_selection.active.line + 1, 2, cur_selection.active.line + 1, 3);
 }
 
 export function add_line_to_cell(): void {
@@ -306,18 +261,53 @@ export function add_row_below(param_editor?: vscode.TextEditor, param_cell_index
 	);
 }
 
-export function isInTable(): boolean {
+// A function to navigate to the next cell
+export function next_cell(): void {
 	const editor = vscode.window.activeTextEditor as vscode.TextEditor;
+
 	const doc = editor.document;
+
 	const cur_selection = editor.selection;
 
-	// get the table range
-	const table_range = text.get_table_range(doc, cur_selection);
+	// get the next cell range
+	const next_cell_range = text.get_next_cell_range(doc, cur_selection);
 
-	// check if the cursor is in a table
-	if (!table_range) {
-		return false;
+	// check if a next cell exists
+	if (!next_cell_range) {
+		// no next cell exists
+		// check configuration if we should insert a new row
+		if (vscode.workspace.getConfiguration("pandoc-grid-table").get("autoInsertNewRow")?.valueOf() === true) {
+			// insert a new row
+			add_row_below(editor, 0);
+		}
+		return;
 	}
 
-	return true;
+	// select the next cell
+	editor.selection = new vscode.Selection(next_cell_range.start, next_cell_range.end);
+
+	// Format the table
+	format_table(editor);
 }
+
+// A function to navigate to the previous cell
+export function previous_cell(): void {
+	const editor = vscode.window.activeTextEditor as vscode.TextEditor;
+
+	const doc = editor.document;
+
+	const cur_selection = editor.selection;
+
+	// get the previous cell range
+	const previous_cell_range = text.get_previous_cell_range(doc, cur_selection);
+
+	// check if a previous cell exists
+	if (!previous_cell_range) {
+		return;
+	}
+
+	// select the previous cell
+	editor.selection = new vscode.Selection(previous_cell_range.start, previous_cell_range.end);
+	// Format the table
+	format_table(editor);
+	}
