@@ -12,6 +12,7 @@
 	"pricing": "Free",
 	"publisher": "Hammi",
 	"main": "./out/extension.js",
+	"repository": { "url": "https://github.com/AH-Hammi/pandoc-grid-table", "type": "git" },
 	"contributes": {
 		"commands": [
 			{

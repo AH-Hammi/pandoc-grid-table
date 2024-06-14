@@ -60,8 +60,6 @@ Ist die aktuelle Zelle gleich der nachfolgenden Tabelle, wenn nicht so vergleich
 +------+-------+
 ```
 
-This is the README for your extension "pandoc-grid-table". After writing up a brief description, we recommend including the following sections.
-
 ## Features
 
 This Extension aims to help in handling [pandoc grid tables](https://pandoc.org/MANUAL.html#extension-grid_tables).
@@ -74,40 +72,38 @@ For this extension to make any sense you need to have pandoc installed.
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
 This extension contributes the following settings:
 
 * `myExtension.enable`: Enable/disable this extension.
 * `myExtension.thing`: Set to `blah` to do something.
 
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
 ## Release Notes
 
 No release notes yet.
 
-### 1.0.0
+### 0.0.1
 
-upcoming
-
-## Upcoming Features
+Initial Release with the following features:
 
 * [x] Jump to next cell
 * [x] Jump to previous cell
 * [x] Format table
 * [x] Add a snippet to add a new table
 * [x] [Create multiline cell](#create-multiline-cell)
-* [x] Insert Row
+* [x] Insert Row (Behavior will change in the future)
+* [x] Add a new row after tabing from the last cell
+  * [x] Make it an option
+
+#### Create multiline cell
+
+On pressing "enter" key in a cell,  
+create a new line for that cell and start at the beginning of the cell.
+
+## Upcoming Features
+
 * [ ] Delete Row
 * [ ] Insert Column
 * [ ] Delete Column
-* [x] Add a new row after tabing from the last cell
-  * [x] Make it an option
 * [ ] Paste from Excel
 * [ ] Paste from CSV
 * [ ] Concatenation of Cells
@@ -119,8 +115,3 @@ upcoming
   * [ ] Insert Column Right
   * [ ] Delete Row
   * [ ] Delete Column
-
-### Create multiline cell
-
-On pressing "enter" key in a cell,  
-create a new line for that cell and start at the beginning of the cell.
