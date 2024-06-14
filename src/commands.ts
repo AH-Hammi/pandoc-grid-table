@@ -82,8 +82,8 @@ export async function insert_new_table(param_columns?: string, param_rows?: stri
 	const number_of_columns = Number.parseInt(input_columns);
 	const number_of_rows = Number.parseInt(input_rows);
 	if (
-		number_of_columns === undefined ||
-		number_of_rows === undefined ||
+		Number.isNaN(number_of_columns) ||
+		Number.isNaN(number_of_rows) ||
 		number_of_columns <= 0 ||
 		number_of_rows <= 0
 	) {
@@ -220,9 +220,6 @@ export function add_row_below(param_editor?: vscode.TextEditor, param_cell_index
 	if (cell_index === undefined) {
 		// get the cell index
 		cell_index = text.get_cell_index_in_line(line, cur_selection.active.character);
-		if (cell_index === -1) {
-			return;
-		}
 	}
 
 	// replace all characters with " " except "|"
@@ -310,4 +307,4 @@ export function previous_cell(): void {
 	editor.selection = new vscode.Selection(previous_cell_range.start, previous_cell_range.end);
 	// Format the table
 	format_table(editor);
-	}
+}
