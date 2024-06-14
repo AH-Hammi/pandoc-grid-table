@@ -1,3 +1,5 @@
+name: Test Extension
+run-name: ${{ github.actor }}
 on:
   push:
     branches:
@@ -15,6 +17,3 @@ jobs:
         node-version: 18.x
     - run: npm install
     - run: xvfb-run -a npm test
-      if: runner.os == 'Linux'
-    - run: npm test
-      if: runner.os != 'Linux'
