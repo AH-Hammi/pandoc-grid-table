@@ -9,13 +9,14 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20.x
       - run: npm install
       - run: xvfb-run -a npm run compile
+      - run: npm install -g vsce
       - name: Publish
         run: npm run deploy
         env:
