@@ -16,4 +16,7 @@ jobs:
           node-version: 18.x
       - run: npm install
       - run: xvfb-run -a npm run build
-      - run: npm run publish
+      - name: Publish
+        run: npm run publish
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
