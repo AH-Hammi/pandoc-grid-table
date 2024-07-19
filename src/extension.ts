@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import * as commands from "./commands";
 
 export function activate(context: vscode.ExtensionContext) {
-	console.log('Congratulations, your extension "pandoc-grid-table" is now active!');
+	console.log('"pandoc-grid-table" extension is now active!');
 
 	context.subscriptions.push(
 		vscode.window.onDidChangeTextEditorSelection(() => {
