@@ -5,11 +5,7 @@ enum TableSeparator {
 
 function is_row_separator(line_text: string): boolean {
 	// check if the first char is a valid char
-	if (
-		line_text.charAt(0) !== ":" &&
-		line_text.charAt(0) !== "=" &&
-		line_text.charAt(0) !== "-"
-	) {
+	if (line_text.charAt(0) !== ":" && line_text.charAt(0) !== "=" && line_text.charAt(0) !== "-") {
 		// if not, the line is not a row separator
 		return false;
 	}
@@ -72,21 +68,15 @@ export class TableCell {
 
 		// check if the first and last char are a valid enum value
 		if (!Object.values(TableSeparator).includes(first_char as TableSeparator)) {
-			throw new Error(
-				"The first character of the cell is not a valid separator.",
-			);
+			throw new Error("The first character of the cell is not a valid separator.");
 		}
 		if (!Object.values(TableSeparator).includes(last_char as TableSeparator)) {
-			throw new Error(
-				"The last character of the cell is not a valid separator.",
-			);
+			throw new Error("The last character of the cell is not a valid separator.");
 		}
 
 		// The first and last character determine what separator is used
 		this.front_separator = raw_cell.charAt(0) as TableSeparator;
-		this.back_separator = raw_cell.charAt(
-			raw_cell.length - 1,
-		) as TableSeparator;
+		this.back_separator = raw_cell.charAt(raw_cell.length - 1) as TableSeparator;
 		// The rest of the cell is the inner text
 
 		// save the initial length
@@ -104,7 +94,13 @@ export class TableCell {
 			this._cell = `${first_char}${raw_cell.charAt(2)}${last_char}`;
 			this.is_row_separator = true;
 		} else {
-			this._cell = ` ${raw_cell.substring(1, raw_cell.length - 1).trim()} `;
+			// allow spaces in front but remove them in the back
+			this._cell = `${raw_cell.substring(1, raw_cell.length - 1).trimEnd()} `;
+			// check if the first char is a " "
+			if (this._cell.charAt(0) !== " ") {
+				// if not, add a space
+				this._cell = ` ${this._cell}`;
+			}
 		}
 	}
 
@@ -119,9 +115,7 @@ export class TableCell {
 	get_formatted_cell(length: number, add_back_separator: boolean): string {
 		// check if the length is more than the minimum length
 		if (length < this.minimum_cell_length) {
-			throw new Error(
-				`The length of the cell is too short. The minimum length is ${this.minimum_cell_length}.`,
-			);
+			throw new Error(`The length of the cell is too short. The minimum length is ${this.minimum_cell_length}.`);
 		}
 
 		// this returns the formatted cell with the given length
@@ -135,9 +129,7 @@ export class TableCell {
 			const last_char = this._cell.charAt(this._cell.length - 1);
 			// check if we need to shorten or extend the cell
 			formatted += this._cell.charAt(0);
-			formatted += this._cell
-				.charAt(1)
-				.repeat(length - (this._cell.length - 1));
+			formatted += this._cell.charAt(1).repeat(length - (this._cell.length - 1));
 			// add the last char back
 			formatted += `${last_char}`;
 		} else {
