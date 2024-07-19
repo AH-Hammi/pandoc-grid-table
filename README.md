@@ -1,11 +1,12 @@
 # pandoc-grid-table README
 
-Grid Table
+## Features
+
+This Extension aims to help in handling [pandoc grid tables](https://pandoc.org/MANUAL.html#extension-grid_tables).
+
+Grid Tables can look something like this:
 
 ```plain
-+-------------+---------+----------+
-|             | max     | 56.7 °C  |
-
 +-----------------------+----------+
 | Properties            | Earth    |
 +=============+=========+==========+
@@ -15,56 +16,16 @@ Grid Table
 |             +---------+----------+
 |             | max     | 56.7 °C  |
 +-------------+---------+----------+
-
- 13            6
-+-------------+------+ Table
-| verbunden | test |
- 6      6      6
-+------+------+------+ Table
- 6      13
-| test | verbunden   | Table
- 6      6      6
-+------+------+------+ Table
- 13            6
-| verbunden   | test | Table
-+-------------+------+
-
- 6      6      6      6
-+------+------+------+------+ Row
-| test | test | test | test | row Table
-+------+------+------+------+ row
-
- 13             28
-| verbunden   | verbunden und verlängert   | Row Table
-
- 6      6      6      6
-+------+------+------+------+ Row
-| test | test | test | test | row Table
-+------+------+------+------+ row
 ```
 
-Berechne die Summe von Spalte 1 und 2 der vorherigen Tabelle und vergleiche diese mit der Summe der aktuellen
+As we can see, in comparison to classical pipe tables, grid tables are a bit complexer but more powerful due to the following features:
 
-Vergleiche Breite Zelle 1 der Tabelle 1 mit Zelle 1 Tabelle 2  
-Wenn die Breite == so gehe weiter zur
+- Grid Tables can contain concatenated columns
+- Grid Tables can contain concatenated rows
+- Grid Tables can contain multiple rows per cell
+- Furthermore a header and footer can be added
 
-Ist die aktuelle Zelle gleich der nachfolgenden Tabelle, wenn nicht so vergleiche:  
-    wenn nachfolgende Zelle > als aktuelle ist, so addiere die nachfolgende Zelle +1 zu der aktuelle und vergleiche die Summe.  
-      mache dies bis die Summe == ist  
-
-```plain
-+--------------+
-| Header 1     |
-+======+=======+
-| test | Row 2 |
-+------+-------+
-```
-
-## Features
-
-This Extension aims to help in handling [pandoc grid tables](https://pandoc.org/MANUAL.html#extension-grid_tables).
-
-This extension enables you to quickly jump from one cell to the next as well as auto formatting the table.
+This extension enables you to quickly jump from one cell to the next as well as auto formatting the table. It should work as a general helper for working with pandoc grid tables.
 
 ## Requirements
 
@@ -74,44 +35,46 @@ For this extension to make any sense you need to have pandoc installed.
 
 This extension contributes the following settings:
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+- `pandoc-grid-table.autoInsertNewRow`: Enables whether to add a new row after going to next cell in last cell of the table.
 
 ## Release Notes
 
-No release notes yet.
+### 0.0.2
+
+- Changed Behavior of Formatter to allow for multiple space in front of the cell content.
+  This is necessary to be able to use lists inside of a cell.
 
 ### 0.0.1
 
 Initial Release with the following features:
 
-* [x] Jump to next cell
-* [x] Jump to previous cell
-* [x] Format table
-* [x] Add a snippet to add a new table
-* [x] [Create multiline cell](#create-multiline-cell)
-* [x] Insert Row (Behavior will change in the future)
-* [x] Add a new row after tabing from the last cell
-  * [x] Make it an option
+- [x] Jump to next cell
+- [x] Jump to previous cell
+- [x] Format table
+- [x] Add a snippet to add a new table
+- [x] [Create multiline cell](#create-multiline-cell)
+- [x] Insert Row (Behavior will change in the future)
+- [x] Add a new row after tabing from the last cell
+  - [x] Make it an option
 
 #### Create multiline cell
 
-On pressing "enter" key in a cell,  
+On pressing "enter" key in a cell,
 create a new line for that cell and start at the beginning of the cell.
 
 ## Upcoming Features
 
-* [ ] Delete Row
-* [ ] Insert Column
-* [ ] Delete Column
-* [ ] Paste from Excel
-* [ ] Paste from CSV
-* [ ] Concatenation of Cells
-* [ ] Add alignment to cells depending on the header row
-* [ ] Make functions available to click on while in a cell
-  * [ ] Insert Row Above
-  * [ ] Insert Row Below
-  * [ ] Insert Column Left
-  * [ ] Insert Column Right
-  * [ ] Delete Row
-  * [ ] Delete Column
+- [ ] Delete Row
+- [ ] Insert Column
+- [ ] Delete Column
+- [ ] Paste from Excel
+- [ ] Paste from CSV
+- [ ] Concatenation of Cells
+- [ ] Add alignment to cells depending on the header row
+- [ ] Make functions available to click on while in a cell
+  - [ ] Insert Row Above
+  - [ ] Insert Row Below
+  - [ ] Insert Column Left
+  - [ ] Insert Column Right
+  - [ ] Delete Row
+  - [ ] Delete Column
