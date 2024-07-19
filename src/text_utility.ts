@@ -23,13 +23,13 @@ export function get_table_range(doc: vscode.TextDocument, cur_selection: vscode.
 			continue;
 		}
 		if (line_text.charAt(0) !== "|") {
-			console.log(`Not a | or + at line ${start_line + 1}, Not a valid table`);
+			// console.log(`Not a | or + at line ${start_line + 1}, Not a valid table`);
 			return undefined;
 		}
 
 		// on 0 exit the loop
 		if (start_line === 0) {
-			console.log(`Top of document didn't find start of table`);
+			// console.log(`Top of document didn't find start of table`);
 			return undefined;
 		}
 		start_line--;
@@ -60,7 +60,7 @@ export function get_table_range(doc: vscode.TextDocument, cur_selection: vscode.
 		// on the last line exit the loop and return undefined
 		// because we are at the end of the document
 		if (end_line === doc.lineCount - 1) {
-			console.log(`Bottom of document didn't find end of table`);
+			// console.log(`Bottom of document didn't find end of table`);
 			return undefined;
 		}
 		end_line++;
@@ -133,7 +133,7 @@ function find_next_cell_in_current_line(line_text: string, current_col: number):
 		end_col++;
 		// exit function if we reach the end of the line
 		if (end_col === line_text.length) {
-			console.log("Reached end of line couldn't find next cell");
+			// console.log("Reached end of line couldn't find next cell");
 			return undefined;
 		}
 	}
